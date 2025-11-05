@@ -1,0 +1,25 @@
+baseURL = "/"
+languageCode = "en-us"
+title = "My Notes & Books"
+
+# Use PaperMod via Hugo Modules (fetched at build time)
+# (No 'theme =' needed when using modules, but harmless if present)
+theme = "PaperMod"
+
+[module]
+  [[module.imports]]
+    path = "github.com/adityatelange/hugo-PaperMod"
+
+[params]
+  defaultTheme = "auto"
+  ShowReadingTime = true
+
+[menu]
+  [[menu.main]]
+    name = "Notes"
+    url = "/notes/"
+    weight = 10
+  [[menu.main]]
+    name = "Books"
+    url = "/books/"
+    weight = 20
