@@ -4,7 +4,6 @@ title = "My Notes & Books"
 
 # Use PaperMod via Hugo Modules (fetched at build time)
 # (No 'theme =' needed when using modules, but harmless if present)
-theme = "PaperMod"
 
 [module]
   [[module.imports]]
