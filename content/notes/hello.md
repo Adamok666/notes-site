@@ -6,6 +6,6 @@ tags:
 ---
 First post! 🎉
 
-
-
 I will try to explain why Game Hacking is such a important topic to learn about Malware Development.
+
+![](/uploads/malcom_x.jpeg)
