@@ -6,32 +6,43 @@
     <title>Content Manager</title>
 
     <!-- Identity widget for login/invite -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script>
 
-    <!-- Tell Decap we will initialize manually -->
+    <!-- Tell Decap we'll initialize manually -->
     <script>window.CMS_MANUAL_INIT = true;</script>
 
-    <!-- Decap CMS -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <!-- Decap CMS from jsDelivr (some browsers block unpkg) -->
+    <script src="https://cdn.jsdelivr.net/npm/decap-cms@^3/dist/decap-cms.js" defer></script>
+
+    <style>
+      /* simple visible fallback if something blocks scripts */
+      #cms-fallback { font: 14px/1.4 system-ui, sans-serif; padding: 24px; }
+      #cms-fallback.hidden { display: none; }
+      code { background:#eee; padding:2px 4px; border-radius:4px; }
+    </style>
+  </head>
+  <body>
+    <div id="cms-fallback">Loading editor… If this stays blank, try <code>/admin/#/</code> or disable “tracking protection” for this site.</div>
 
     <script>
-      // Ensure Identity is ready
-      if (window.netlifyIdentity) {
+      // Init Identity safely
+      function initIdentity() {
+        if (!window.netlifyIdentity) return;
         window.netlifyIdentity.init();
-
-        // If you arrived via an invite, show signup
         window.netlifyIdentity.on('init', (user) => {
           if (!user && window.location.hash.includes('invite_token')) {
             window.netlifyIdentity.open('signup');
           }
         });
-
-        // After login, reload so CMS gets the token
         window.netlifyIdentity.on('login', () => window.location.reload());
       }
 
-      // Manually initialize Decap CMS with the same config that was in config.yml
-      document.addEventListener('DOMContentLoaded', () => {
+      // Init CMS safely
+      function initCMS() {
+        if (typeof window.CMS === 'undefined') {
+          console.error('Decap CMS script did not load (CMS is undefined).');
+          return;
+        }
         CMS.init({
           config: {
             backend: { name: 'git-gateway', branch: 'main' },
@@ -53,3 +64,37 @@
               },
               {
                 name: 'books',
+                label: 'Books',
+                folder: 'content/books',
+                create: true,
+                slug: '{{slug}}',
+                fields: [
+                  { label: 'Title', name: 'title', widget: 'string' },
+                  { label: 'Author', name: 'author', widget: 'string' },
+                  { label: 'Status', name: 'status', widget: 'select', options: ['planning','reading','finished'] },
+                  { label: 'Rating (1–5)', name: 'rating', widget: 'number', min: 1, max: 5, required: false },
+                  { label: 'Started', name: 'started', widget: 'datetime', required: false },
+                  { label: 'Finished', name: 'finished', widget: 'datetime', required: false },
+                  { label: 'Tags', name: 'tags', widget: 'list', required: false },
+                  { label: 'PDF', name: 'pdf', widget: 'file', required: false },
+                  { label: 'Notes', name: 'body', widget: 'markdown', required: false },
+                ],
+              },
+            ],
+          },
+        });
+        document.getElementById('cms-fallback').classList.add('hidden');
+      }
+
+      window.addEventListener('load', () => {
+        initIdentity();
+        initCMS();
+
+        // Route hint: Decap expects a hash router -> ensure #/
+        if (!location.hash || location.hash === '#') {
+          location.hash = '#/';
+        }
+      });
+    </script>
+  </body>
+</html>
