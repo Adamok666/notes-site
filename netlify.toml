@@ -1,6 +1,9 @@
 [build]
   publish = "public"
   command = "hugo --gc"
+
+  # Only build if site files changed. Skip builds for README, config tweaks, etc.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':!content' ':!layouts' ':!static' || false"
   
 [build.environment]
   HUGO_VERSION = "0.146.0"
